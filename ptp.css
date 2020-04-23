@@ -2,8 +2,9 @@
 
 Marcel stylesheet for passthepopcorn
 by jimpalompa
+modified by Flochamonium
 
-Stylesheet url: https://dl.dropboxusercontent.com/s/m65ut6546gpi7it/marcel.css
+Original Stylesheet url: https://dl.dropboxusercontent.com/s/m65ut6546gpi7it/marcel.css
 Forum thread: http://passthepopcorn.me/forums.php?action=viewthread&threadid=25973
 Profile: http://passthepopcorn.me/user.php?id=53284
 
@@ -538,11 +539,10 @@ blockquote
 ------------------------------------- */
 
 .site-logo {
-    display:none;
-    background: url(//dl.dropboxusercontent.com/s/e67054tos08mvui/logo-neutral.jpg) no-repeat;
-    background-size: 800px 125px;
-    width: 800px;
-    height: 125px;
+    background: url(https://ptpimg.me/e666qm.png) no-repeat;
+    background-size: 700px 124px;
+    width: 700px;
+    height: 124px;
     margin: 0 auto;
 }
 
@@ -868,7 +868,7 @@ img#browse_settings {
 }
 
 .small-cover-movie-list__movie__title:before {
-    content: '🏆';
+    content: 'ðŸ†';
     padding-right: 2px;
 }
 
@@ -2283,6 +2283,68 @@ p:first-child, .alert:first-child, .heading:first-child {
         font-size: 1.3rem;
     }
 
+}
+
+
+.basic-movie-list__movie__cover-link--seen::after {
+	content:"";
+	position:absolute;
+	top:0;
+	right:0;
+	background-image:url("https://passthepopcorn.me/static/common/symbols/seen-overlay.png");
+	background-size:cover;
+	width:22px;
+	height:22px
+}
+
+.basic-movie-list__movie__cover-link {
+	position:relative;
+	display:block;
+}
+
+.cover-movie-list__movie__cover-link--seen::after {
+	content:"";
+	position:absolute;
+	right:0;
+	top:0;
+	background-image:url("https://passthepopcorn.me/static/common/symbols/seen-overlay.png");
+	background-size:cover;
+	width:32px;
+	height:32px
+}
+
+.cover-movie-list__movie {
+	position:relative;
+}
+
+.huge-movie-list__movie__cover__link--seen::after {
+	content:"";
+	position:absolute;
+	right:0;
+	top:0;
+	background-image:url("https://passthepopcorn.me/static/common/symbols/seen-overlay.png");
+	background-size:cover;
+	width:46px;
+	height:46px
+}
+
+.huge-movie-list__movie__cover {
+	position:relative;
+}
+
+.small-cover-movie-list__movie__link--seen::after {
+	content:"";
+	position:absolute;
+	right:0;
+	top:0;
+	background-image:url("https://passthepopcorn.me/static/common/symbols/seen-overlay.png");
+	background-size:cover;
+	width:26px;
+	height:26px
+}
+
+.small-cover-movie-list__movie{
+	position:relative;
 }
 
 /* ------------------------ I think this just might be my masterpiece --------------------------- */
