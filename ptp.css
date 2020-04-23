@@ -921,7 +921,7 @@ img#browse_settings {
 }
 
 .table--bordered>tbody>tr.basic-movie-list__details-row>td {
-    padding: 10px 15px;
+    padding: 15px 8px;
 }
 
 table#movie-ratings-table {
