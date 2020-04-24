@@ -97,6 +97,10 @@ h6 {
     font-size: 0.9rem;
 }
 
+.main-column > br:nth-child(2) {
+    display: none;
+}
+
 abbr[title] {
     border-bottom: 1px dotted;
 }
@@ -2348,3 +2352,10 @@ p:first-child, .alert:first-child, .heading:first-child {
 }
 
 /* ------------------------ I think this just might be my masterpiece --------------------------- */
+
+.main-column > br:nth-child(2) {
+	display: none;
+}
+
+
+/* ------------------------ MINE MODS --------------------------- */
