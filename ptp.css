@@ -2365,5 +2365,33 @@ div[id^='role_'] > h2:nth-child(1) {
 	margin-top: 0px;
 }
 
+.site-logo {
+    background: url(https://ptpimg.me/e666qm.png) no-repeat;
+        background-size: auto;
+    background-size: 680px 120px;
+    width: 680px;
+    height: 120px;
+    margin: 0 auto;
+}
+
+.header {
+    padding-top: 35px;
+}
+
+.search-bar {
+    padding: 4px 0;
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    top: 197px;
+}
+
+.main-menu {
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    top: 160px;
+}
 
 /* ------------------------ MINE MODS --------------------------- */
