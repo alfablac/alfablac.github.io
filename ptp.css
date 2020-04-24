@@ -2361,5 +2361,9 @@ p:first-child, .alert:first-child, .heading:first-child {
 	margin-top: 0px;
 }
 
+#role_5 > h2:nth-child(1) {
+	margin-top: 0px;
+}
+
 
 /* ------------------------ MINE MODS --------------------------- */
