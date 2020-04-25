@@ -2394,4 +2394,19 @@ div[id^='role_'] > h2:nth-child(1) {
     top: 160px;
 }
 
+.alert-bars {
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    top: 80px;
+    width: 960px;
+}
+
+.page__main-content {
+    margin: 0 auto;
+    position: relative;
+    top: 80px;
+    width: 960px;
+}
+
 /* ------------------------ MINE MODS --------------------------- */
