@@ -88,3 +88,32 @@ strong.snatched {
 strong.tl_reported{
     color: red !important;
 }
+a.show_torrents_link {
+  text-decoration: none;
+  margin: 0 auto;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  background-color: rgb(108, 108, 108)
+}
+
+a.show_torrents_link::before {
+  content: "+";
+  height:15px;
+  width:15px;
+  font-size:17px;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-family:courier;
+  color:white;
+}
+
+.show_torrents {
+    vertical-align: center;
+    width: 28px;
+    height: 15px;
+    background: url(images/show.png) no-repeat center center;
+}
