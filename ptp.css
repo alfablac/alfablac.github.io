@@ -2409,4 +2409,10 @@ div[id^='role_'] > h2:nth-child(1) {
     width: 1050px;
 }
 
+
+.torrent-info__download-modifier--free {
+ color: #228B22 !important;
+}
+
+
 /* ------------------------ MINE MODS --------------------------- */
