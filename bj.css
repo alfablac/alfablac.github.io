@@ -117,3 +117,7 @@ a.show_torrents_link::before {
     height: 15px;
     background: url(images/show.png) no-repeat center center;
 }
+
+div.torrent_info > strong[style="color: blue;"]{
+   color: steelblue !important;
+}
