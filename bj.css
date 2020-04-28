@@ -89,6 +89,15 @@ strong.snatched {
     border: unset;
     color: tomato !important;
 }
+strong.seeding {
+    font-size: unset;
+    padding: unset;
+    border-radius: unset;
+    display: inline-block;
+    background-color: unset;
+    border: unset;
+    color: mediumturquoise !important;
+}
 strong.tl_reported{
     color: red !important;
 }
