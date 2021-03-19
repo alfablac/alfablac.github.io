@@ -75,4 +75,6 @@ div.torrent>div:nth-child(8) {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 }
-
+.img-people {
+    height: 94px !important;
+}
