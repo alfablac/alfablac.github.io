@@ -1,4 +1,4 @@
-@media (min-width: 700px)
+@media (min-width: 1024px)
 {
 	#facetedSearch{
 	  margin: 0 auto;
@@ -77,4 +77,20 @@ div.torrent>div:nth-child(8) {
 }
 .img-people {
     height: 94px !important;
+}
+.movie-overview {
+  line-height: 1.4;
+}
+.movie-heading-box>br:nth-of-type(1){
+  display:none;
+}
+.movie-heading>span
+ {
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+ }
+.movie-poster {
+    width: 250px;
+}
+.movie-wrapper {
+    min-height: 300px;
 }
