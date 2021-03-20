@@ -89,8 +89,14 @@ div.torrent>div:nth-child(8) {
     font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
  }
 .movie-poster {
-    width: 250px;
+    width: 230px;
 }
 .movie-wrapper {
     min-height: 300px;
+}
+.col-md-push-3 {
+    left: 21%;
+}
+.cast-list {
+   margin-right: 0px !important;
 }
