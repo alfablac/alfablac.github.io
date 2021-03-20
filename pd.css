@@ -100,3 +100,14 @@ div.torrent>div:nth-child(8) {
 .cast-list {
    margin-right: 0px !important;
 }
+.movie-overview {
+    line-height: 1;
+}
+
+.movie-details {
+    padding-bottom: 0px;
+    padding-top: 2px;
+}
+.row.cast-list {
+    margin-top: 1%;
+}
