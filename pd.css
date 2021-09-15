@@ -35,7 +35,7 @@ div.header>div.inner_content>h1 {
     margin-bottom: 2px !important;
 }
 .table>tbody>tr.success>td, .table>tbody>tr.success>th, .table>tbody>tr>td.success, .table>tbody>tr>th.success, .table>tfoot>tr.success>td, .table>tfoot>tr.success>th, .table>tfoot>tr>td.success, .table>tfoot>tr>th.success, .table>thead>tr.success>td, .table>thead>tr.success>th, .table>thead>tr>td.success, .table>thead>tr>th.success {
-    background-color: #16181f!important;
+    background-color: #2c303c!important;
 }
 .pagination>li>a, .pagination>li>span {
     padding: 3px 8px;
