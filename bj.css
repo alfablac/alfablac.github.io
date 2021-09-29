@@ -62,19 +62,19 @@ tr.torrent_row>td:nth-child(1)>a:nth-child(2)>strong[title="Free"] {
 
 .group_info>div.torrent_info {
     font-weight: 500;
-    font-family: Roboto, tahoma, helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
     font-size: 13px
 }
 
 .group_info,
 .group_info>a.tooltip {
     font-weight: 500;
-    font-family: Roboto, tahoma, helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
     font-size: 14.5px
 }
 .torrent_table div.tags {
     font-weight: 400;
-    font-family: Roboto, tahoma, helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
     font-size: 12px;
     color: #b5b5b5;
     padding: 0
