@@ -19,17 +19,8 @@ Profile: http://passthepopcorn.me/user.php?id=53284
 
 @font-face {
   font-family: 'FontAwesome';
-  src: url('//dl.dropboxusercontent.com/s/t0ltzux7fklcshq/fontawesome-webfont.eot?v=4.3.0');
-  src: url('//dl.dropboxusercontent.com/s/t0ltzux7fklcshq/fontawesome-webfont.eot?#iefix&v=4.3.0') 
-	  format('embedded-opentype'), 
-	  url('//www.cos.ufrj.br/semana/css/font-awesome/fonts/fontawesome-webfont.woff2') 
-	  format('woff2'), 
-	  url('//www.cos.ufrj.br/semana/css/font-awesome/fonts/fontawesome-webfont.woff') 
-	  format('woff'), 
-	  url('//www.cos.ufrj.br/semana/css/font-awesome/fonts/fontawesome-webfont.ttf') 
-	  format('truetype'), 
-	  url('//www.cos.ufrj.br/semana/css/font-awesome/fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') 
-	  format('svg');
+  src: url('https://cdn.jsdelivr.net/gh/HowcanoeWang/HowcanoeWang.github.io/fonts/fontawesome-webfont.eot?v=4.7.0');
+  src: url('https://cdn.jsdelivr.net/gh/HowcanoeWang/HowcanoeWang.github.io/fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'), url('https://cdn.jsdelivr.net/gh/HowcanoeWang/HowcanoeWang.github.io/fonts/fontawesome-webfont.woff2?v=4.7.0') format('woff2'), url('https://cdn.jsdelivr.net/gh/HowcanoeWang/HowcanoeWang.github.io/fonts/fontawesome-webfont.woff?v=4.7.0') format('woff'), url('https://cdn.jsdelivr.net/gh/HowcanoeWang/HowcanoeWang.github.io/fonts/fontawesome-webfont.ttf?v=4.7.0') format('truetype'), url('https://cdn.jsdelivr.net/gh/HowcanoeWang/HowcanoeWang.github.io/fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
