@@ -812,7 +812,7 @@ img#browse_settings {
 }
 
 .basic-movie-list__movie__cover {
-    width: 90px;
+    width: 130px;
 }
 
 .basic-movie-list__movie__rating-container {
@@ -2407,7 +2407,7 @@ div[id^='role_'] > h2:nth-child(1) {
     margin: 0 auto;
     position: relative;
     top: 80px;
-    width: 1050px;
+    width: 1250px;
 }
 
 
