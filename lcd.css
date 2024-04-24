@@ -1,0 +1,91 @@
+@-moz-document url-prefix("https://locadora.cc/torrents?perPage=25") {
+@media only screen and (max-width: 613px) {
+    .table-responsive .btn {
+        display: inline-block;
+        margin: 4px;
+        width: 2%;
+    }
+}
+
+.table {
+    width: 65%;
+    margin: 0 auto;
+}
+
+.torrent-listings-stats {
+    float: right;
+    width: 100%;
+
+    background-color: #1b1b1b;
+}
+
+tbody>tr>td, thead>tr>th {
+    font-size: 12px;
+}
+
+.torrent-listings-name {
+    font-size: 14px !important;
+}
+
+.torrent-listings-format{
+    
+    display: inline-flex;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+     background-color: #262626 ;
+}
+
+.panel-body, .table-striped>tbody>tr, .table>tbody>tr.info>td {
+    background-color: #272727;
+}
+
+.panel-body, .table-striped>tbody>tr.success {
+    background-color: #404040;
+}
+
+tr:last-child {
+    background-color: #353535 !important;
+}
+
+.btn-success, .btn-success:hover, .label-success {
+    background-color: transparent;
+    background-image: none;
+    font-size: 12px !important;
+}
+
+.text-center {
+    text-align: center;
+    padding: 0px !important;
+}
+
+.label {
+    padding: 2px;
+
+}
+
+.text-center > i{
+    padding-right: 5px;
+    font-size: 18px !important;
+
+}
+
+.badge-extra, .badge-user {
+    font-size: 12px !important;
+}
+
+.torrent-listings-format div.text-center:nth-child(2) {
+    width: 50%;
+}
+
+.torrent-listings-format div.text-center:nth-child(3) {
+    width: 50%;
+    padding-top: 15px !important;
+}
+
+nav {
+    height: 35px
+}
+
+
+}
