@@ -966,7 +966,7 @@ table#movie-ratings-table td {
     margin-bottom: 1em;
 }
 
-.sidebar img {
+.sidebar img.sidebar-cover-image {
     display: block;
     margin: 0 auto;
     max-width: 100%;
