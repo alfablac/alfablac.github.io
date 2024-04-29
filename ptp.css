@@ -2415,5 +2415,10 @@ div[id^='role_'] > h2:nth-child(1) {
  color: #228B22 !important;
 }
 
+#parents_guide > div.panel__body > div > li {
+    list-style-type: none; /* Remove the marker */
+    padding-top: 5px; /* Add 5 pixel padding to the top */
+}
+
 
 /* ------------------------ MINE MODS --------------------------- */
