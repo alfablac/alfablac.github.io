@@ -24,6 +24,7 @@
       --shadow: 0 2px 8px rgba(0,0,0,0.1);
       --accent: #0d6efd;
       --accent-hover: #0b5ed7;
+      --table-header: #e9ecef;
     }
 
     [data-theme="dark"] {
@@ -35,6 +36,7 @@
       --shadow: 0 2px 8px rgba(0,0,0,0.3);
       --accent: #4a9eff;
       --accent-hover: #6bb0ff;
+      --table-header: #3d3d3d;
     }
 
     body {
@@ -70,20 +72,22 @@
       background: var(--bg-secondary);
       border: 2px solid var(--border-color);
       color: var(--text-primary);
-      padding: 8px 16px;
-      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 20px;
       transition: all 0.3s;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
     }
 
     .theme-toggle:hover {
       background: var(--accent);
       color: white;
       border-color: var(--accent);
+      transform: scale(1.1);
     }
 
     .metadata-section {
@@ -94,33 +98,92 @@
       box-shadow: var(--shadow);
     }
 
-    .metadata-title {
-      font-size: 1.2rem;
+    .file-name {
+      text-align: center;
+      font-size: 1.3rem;
       font-weight: 600;
-      margin-bottom: 16px;
       color: var(--accent);
+      padding: 20px;
+      background: var(--table-header);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      word-break: break-all;
     }
 
-    .metadata-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 12px;
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      margin-top: 24px;
+      color: var(--accent);
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border-color);
     }
 
-    .metadata-item {
-      display: flex;
-      padding: 8px 0;
+    .section-title:first-child {
+      margin-top: 0;
     }
 
-    .metadata-label {
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+
+    .info-table tr {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .info-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .info-table td {
+      padding: 12px 16px;
+    }
+
+    .info-table td:first-child {
       font-weight: 600;
       color: var(--text-secondary);
-      min-width: 140px;
+      width: 140px;
+      white-space: nowrap;
     }
 
-    .metadata-value {
+    .info-table td:last-child {
       color: var(--text-primary);
       word-break: break-word;
+    }
+
+    .audio-track, .sub-track {
+      background: var(--table-header);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .audio-track:last-child, .sub-track:last-child {
+      margin-bottom: 0;
+    }
+
+    .track-detail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .track-badge {
+      background: var(--accent);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .track-info {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
     }
 
     .images-section {
@@ -231,12 +294,18 @@
         align-items: flex-start;
       }
 
-      .metadata-grid {
-        grid-template-columns: 1fr;
+      .info-table td:first-child {
+        width: 120px;
+        font-size: 0.9rem;
       }
 
       .image-grid {
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+
+      .file-name {
+        font-size: 1.1rem;
+        padding: 16px;
       }
     }
 
@@ -245,18 +314,16 @@
     }
   </style>
 </head>
-<body>
+<body data-theme="dark">
   <div class="container">
     <div class="header">
       <h1>Media Viewer</h1>
-      <button class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span>
-        <span id="theme-text">Dark Mode</span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span id="theme-icon">☀️</span>
       </button>
     </div>
 
     <div class="metadata-section">
-      <div class="metadata-title">File Information</div>
       <div id="metadata-content"></div>
     </div>
 
@@ -291,7 +358,6 @@
       html.setAttribute('data-theme', newTheme);
       
       document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-      document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
       
       localStorage.setItem('theme', newTheme);
     }
@@ -311,30 +377,129 @@
     function parseMetadata(text) {
       const lines = text.split('\n').filter(line => line.trim());
       const metadataContainer = document.getElementById('metadata-content');
-      const gridDiv = document.createElement('div');
-      gridDiv.className = 'metadata-grid';
+      
+      let fileName = '';
+      const generalInfo = [];
+      const audioTracks = [];
+      const subTracks = [];
       
       lines.forEach(line => {
         const match = line.match(/^(.+?)\.+:\s*(.+)$/);
         if (match) {
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'metadata-item';
+          const key = match[1].trim();
+          const value = match[2].trim();
           
-          const labelSpan = document.createElement('span');
-          labelSpan.className = 'metadata-label';
-          labelSpan.textContent = match[1].trim() + ':';
-          
-          const valueSpan = document.createElement('span');
-          valueSpan.className = 'metadata-value';
-          valueSpan.textContent = match[2].trim();
-          
-          itemDiv.appendChild(labelSpan);
-          itemDiv.appendChild(valueSpan);
-          gridDiv.appendChild(itemDiv);
+          if (key === 'Name') {
+            fileName = value;
+          } else if (key === 'Audio') {
+            audioTracks.push(value);
+          } else if (key === 'Subs') {
+            subTracks.push(value);
+          } else {
+            generalInfo.push({ key, value });
+          }
         }
       });
       
-      metadataContainer.appendChild(gridDiv);
+      // Display file name
+      if (fileName) {
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'file-name';
+        nameDiv.textContent = fileName;
+        metadataContainer.appendChild(nameDiv);
+      }
+      
+      // Display general info
+      if (generalInfo.length > 0) {
+        const sectionTitle = document.createElement('div');
+        sectionTitle.className = 'section-title';
+        sectionTitle.textContent = 'General Information';
+        metadataContainer.appendChild(sectionTitle);
+        
+        const table = document.createElement('table');
+        table.className = 'info-table';
+        
+        generalInfo.forEach(item => {
+          const row = document.createElement('tr');
+          
+          const keyCell = document.createElement('td');
+          keyCell.textContent = item.key + ':';
+          
+          const valueCell = document.createElement('td');
+          valueCell.textContent = item.value;
+          
+          row.appendChild(keyCell);
+          row.appendChild(valueCell);
+          table.appendChild(row);
+        });
+        
+        metadataContainer.appendChild(table);
+      }
+      
+      // Display audio tracks
+      if (audioTracks.length > 0) {
+        const sectionTitle = document.createElement('div');
+        sectionTitle.className = 'section-title';
+        sectionTitle.textContent = 'Audio Tracks';
+        metadataContainer.appendChild(sectionTitle);
+        
+        audioTracks.forEach((track, index) => {
+          const trackDiv = document.createElement('div');
+          trackDiv.className = 'audio-track';
+          
+          const parts = track.split('//').map(p => p.trim());
+          const mainInfo = parts[0] || '';
+          
+          const mainDiv = document.createElement('div');
+          mainDiv.className = 'track-info';
+          mainDiv.style.marginBottom = '8px';
+          mainDiv.textContent = mainInfo;
+          trackDiv.appendChild(mainDiv);
+          
+          if (parts.length > 1) {
+            const detailDiv = document.createElement('div');
+            detailDiv.className = 'track-detail';
+            
+            for (let i = 1; i < parts.length; i++) {
+              const badge = document.createElement('span');
+              badge.className = 'track-badge';
+              badge.textContent = parts[i];
+              detailDiv.appendChild(badge);
+            }
+            
+            trackDiv.appendChild(detailDiv);
+          }
+          
+          metadataContainer.appendChild(trackDiv);
+        });
+      }
+      
+      // Display subtitles
+      if (subTracks.length > 0) {
+        const sectionTitle = document.createElement('div');
+        sectionTitle.className = 'section-title';
+        sectionTitle.textContent = 'Subtitles';
+        metadataContainer.appendChild(sectionTitle);
+        
+        subTracks.forEach(track => {
+          const trackDiv = document.createElement('div');
+          trackDiv.className = 'sub-track';
+          
+          const subs = track.split(',').map(s => s.trim());
+          const detailDiv = document.createElement('div');
+          detailDiv.className = 'track-detail';
+          
+          subs.forEach(sub => {
+            const badge = document.createElement('span');
+            badge.className = 'track-badge';
+            badge.textContent = sub;
+            detailDiv.appendChild(badge);
+          });
+          
+          trackDiv.appendChild(detailDiv);
+          metadataContainer.appendChild(trackDiv);
+        });
+      }
     }
 
     function extractImages(html) {
@@ -361,10 +526,9 @@
     }
 
     // Initialize theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-    document.getElementById('theme-text').textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
 
     // Parse URL parameters
     const params = new Proxy(new URLSearchParams(window.location.search), {
