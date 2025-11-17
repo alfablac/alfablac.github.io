@@ -622,7 +622,7 @@
           
           // Parse main audio info (first part)
           const mainInfo = parts[0] || '';
-          const audioMatch = mainInfo.match(/^(\w+)\s+(.+?)\s+(\d+\s*kb\/s)\s+(\w+)\s+(\d+ch)$/);
+          const audioMatch = mainInfo.match(/^(\w+)\s+(.+?)\s+(\d+\s*kb\/s)\s+(?:(\w+)\s+)?(\d+ch)$/);
           
           if (audioMatch) {
             const lang = audioMatch[1];
@@ -847,5 +847,6 @@
   </script>
 </body>
 </html>
+
 
 
