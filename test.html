@@ -8,41 +8,411 @@
   <script src="https://unpkg.com/@bbob/html/dist/index.js"></script>
   <script src="https://unpkg.com/@bbob/preset-html5/dist/index.js"></script>
   
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --border-color: #dee2e6;
+      --shadow: 0 2px 8px rgba(0,0,0,0.1);
+      --accent: #0d6efd;
+      --accent-hover: #0b5ed7;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d2d2d;
+      --text-primary: #e9ecef;
+      --text-secondary: #adb5bd;
+      --border-color: #495057;
+      --shadow: 0 2px 8px rgba(0,0,0,0.3);
+      --accent: #4a9eff;
+      --accent-hover: #6bb0ff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .theme-toggle {
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .metadata-section {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .metadata-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .metadata-item {
+      display: flex;
+      padding: 8px 0;
+    }
+
+    .metadata-label {
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 140px;
+    }
+
+    .metadata-value {
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .images-section {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .images-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--accent);
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      justify-items: center;
+    }
+
+    .image-wrapper {
+      cursor: pointer;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .image-wrapper:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+
+    .image-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      position: relative;
+    }
+
+    .modal-image {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: white;
+      color: black;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .modal-close:hover {
+      background: #f0f0f0;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #842029;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border: 1px solid #f5c2c7;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .metadata-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .image-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+    }
+
+    #htmlimage table {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-      <tt id="htmlinfo"></tt>
-      <div id="htmlimage"></div>
+  <div class="container">
+    <div class="header">
+      <h1>Media Viewer</h1>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Dark Mode</span>
+      </button>
+    </div>
+
+    <div class="metadata-section">
+      <div class="metadata-title">File Information</div>
+      <div id="metadata-content"></div>
+    </div>
+
+    <div class="images-section">
+      <div class="images-title">Screenshots</div>
+      <div id="image-gallery" class="image-grid"></div>
+    </div>
+
+    <div id="htmlimage" style="display: none;"></div>
+  </div>
+
+  <div id="modal" class="modal" onclick="closeModal(event)">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal(event)">✕ Close</button>
+      <img id="modal-image" class="modal-image" src="" alt="Full size image">
     </div>
   </div>
-  <div id="time"></div>
+
   <div id="error"></div>
+
   <script type="text/javascript">
-        function b64DecodeUnicode(str) {
-            return decodeURIComponent(atob(str).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-        }
+    function b64DecodeUnicode(str) {
+      return decodeURIComponent(atob(str).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+    }
 
-        const params = new Proxy(new URLSearchParams(window.location.search), {
-            get: (searchParams, prop) => searchParams.get(prop),
-        });
-        let value = params.base64; 
-        let arrayChar = b64DecodeUnicode(value).split('#')
-        const text = arrayChar[0]
-        const $$html = document.getElementById('htmlimage');
-        const $$htmlinfo = document.getElementById('htmlinfo');
-        const core = BbobCore.default(BbobPresetHTML5.default());
-        const errorHandler = function (err) {
-            $$html.innerText = err.message
-        }
-        const parsed = core.process(text, {
-                onError: errorHandler,
-                render: BbobHtml.render,
-        });
-        $$htmlinfo.innerText = arrayChar[1];
-        $$html.innerHTML = parsed.html;
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      
+      document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+      document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+      
+      localStorage.setItem('theme', newTheme);
+    }
 
+    function openModal(url) {
+      const fullImageUrl = url.replace('pixhost.to/show/', 'img1.pixhost.to/images/').replace('_tmp', '_tmp');
+      document.getElementById('modal-image').src = fullImageUrl;
+      document.getElementById('modal').classList.add('active');
+    }
+
+    function closeModal(event) {
+      if (event.target.id === 'modal' || event.target.classList.contains('modal-close')) {
+        document.getElementById('modal').classList.remove('active');
+      }
+    }
+
+    function parseMetadata(text) {
+      const lines = text.split('\n').filter(line => line.trim());
+      const metadataContainer = document.getElementById('metadata-content');
+      const gridDiv = document.createElement('div');
+      gridDiv.className = 'metadata-grid';
+      
+      lines.forEach(line => {
+        const match = line.match(/^(.+?)\.+:\s*(.+)$/);
+        if (match) {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'metadata-item';
+          
+          const labelSpan = document.createElement('span');
+          labelSpan.className = 'metadata-label';
+          labelSpan.textContent = match[1].trim() + ':';
+          
+          const valueSpan = document.createElement('span');
+          valueSpan.className = 'metadata-value';
+          valueSpan.textContent = match[2].trim();
+          
+          itemDiv.appendChild(labelSpan);
+          itemDiv.appendChild(valueSpan);
+          gridDiv.appendChild(itemDiv);
+        }
+      });
+      
+      metadataContainer.appendChild(gridDiv);
+    }
+
+    function extractImages(html) {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      const links = tempDiv.querySelectorAll('a');
+      const gallery = document.getElementById('image-gallery');
+      
+      links.forEach(link => {
+        const img = link.querySelector('img');
+        if (img) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'image-wrapper';
+          wrapper.onclick = () => openModal(link.href);
+          
+          const newImg = document.createElement('img');
+          newImg.src = img.src;
+          newImg.alt = 'Screenshot';
+          
+          wrapper.appendChild(newImg);
+          gallery.appendChild(wrapper);
+        }
+      });
+    }
+
+    // Initialize theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+
+    // Parse URL parameters
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+      get: (searchParams, prop) => searchParams.get(prop),
+    });
+
+    try {
+      let value = params.base64;
+      if (!value) {
+        throw new Error('No base64 parameter found in URL');
+      }
+
+      let arrayChar = b64DecodeUnicode(value).split('#');
+      const bbcodeText = arrayChar[0];
+      const metadataText = arrayChar[1];
+
+      const $$html = document.getElementById('htmlimage');
+      const core = BbobCore.default(BbobPresetHTML5.default());
+      
+      const errorHandler = function (err) {
+        document.getElementById('error').innerHTML = '<div class="error">Error parsing BBCode: ' + err.message + '</div>';
+      };
+
+      const parsed = core.process(bbcodeText, {
+        onError: errorHandler,
+        render: BbobHtml.render,
+      });
+
+      $$html.innerHTML = parsed.html;
+
+      // Parse and display metadata
+      if (metadataText) {
+        parseMetadata(metadataText);
+      }
+
+      // Extract and display images
+      extractImages(parsed.html);
+
+    } catch (err) {
+      document.getElementById('error').innerHTML = '<div class="error">Error: ' + err.message + '</div>';
+    }
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        document.getElementById('modal').classList.remove('active');
+      }
+    });
   </script>
 </body>
 </html>
