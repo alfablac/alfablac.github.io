@@ -631,13 +631,27 @@
       background: var(--table-header);
     }
 
+    .file-listing-list li {
+      display: flex;
+      align-items: baseline;
+    }
+
     .file-listing-list li .file-index {
       color: var(--text-secondary);
       font-size: 11px;
       margin-right: 8px;
       min-width: 24px;
-      display: inline-block;
+      flex-shrink: 0;
       text-align: right;
+    }
+
+    .file-listing-list li .file-size {
+      margin-left: auto;
+      padding-left: 12px;
+      color: var(--text-secondary);
+      font-size: 11px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     </style>
 </head>
@@ -1233,9 +1247,34 @@
     }
           }
     
+    function formatFileSize(bytes) {
+      if (!bytes || bytes === 0) return '';
+      const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+      let i = 0;
+      let size = bytes;
+      while (size >= 1024 && i < units.length - 1) {
+        size /= 1024;
+        i++;
+      }
+      return size.toFixed(i > 0 ? 2 : 0) + ' ' + units[i];
+    }
+
     function renderFileListing(text) {
-      const files = text.split("\n").filter((f) => f.trim());
-      if (files.length === 0) return;
+      const lines = text.split("\n").filter((f) => f.trim());
+      if (lines.length === 0) return;
+
+      // Parse name|size format
+      const files = lines.map((line) => {
+        const pipeIdx = line.lastIndexOf('|');
+        if (pipeIdx > 0) {
+          const name = line.substring(0, pipeIdx);
+          const size = parseInt(line.substring(pipeIdx + 1), 10);
+          return { name, size: isNaN(size) ? 0 : size };
+        }
+        return { name: line, size: 0 };
+      });
+
+      const totalSize = files.reduce((sum, f) => sum + f.size, 0);
 
       const container = document.getElementById("file-listing-container");
 
@@ -1256,7 +1295,8 @@
 
       const count = document.createElement("span");
       count.className = "file-listing-count";
-      count.textContent = files.length + " file" + (files.length !== 1 ? "s" : "");
+      const countText = files.length + " file" + (files.length !== 1 ? "s" : "");
+      count.textContent = totalSize > 0 ? countText + " — " + formatFileSize(totalSize) : countText;
 
       const arrow = document.createElement("span");
       arrow.className = "file-listing-arrow";
@@ -1280,7 +1320,13 @@
         indexSpan.className = "file-index";
         indexSpan.textContent = (idx + 1) + ".";
         li.appendChild(indexSpan);
-        li.appendChild(document.createTextNode(file));
+        li.appendChild(document.createTextNode(file.name));
+        if (file.size > 0) {
+          const sizeSpan = document.createElement("span");
+          sizeSpan.className = "file-size";
+          sizeSpan.textContent = formatFileSize(file.size);
+          li.appendChild(sizeSpan);
+        }
         list.appendChild(li);
       });
 
