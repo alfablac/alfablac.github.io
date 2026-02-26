@@ -538,6 +538,106 @@
     .modal-image.loading {
       opacity: 0.3;
     }
+
+    /* Folder file listing (collapsible) */
+    .file-listing-section {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .file-listing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .file-listing-header:hover {
+      background: var(--table-header);
+    }
+
+    .file-listing-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .file-listing-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .file-listing-count {
+      background: var(--border-color);
+      color: var(--text-primary);
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .file-listing-arrow {
+      font-size: 14px;
+      transition: transform 0.3s;
+    }
+
+    .file-listing-section.open .file-listing-arrow {
+      transform: rotate(180deg);
+    }
+
+    .file-listing-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .file-listing-section.open .file-listing-body {
+      max-height: 2000px;
+    }
+
+    .file-listing-list {
+      list-style: none;
+      padding: 0 16px 12px;
+      margin: 0;
+    }
+
+    .file-listing-list li {
+      padding: 5px 10px;
+      font-size: 12px;
+      font-family: 'Fira Mono', monospace;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-color);
+      word-break: break-all;
+    }
+
+    .file-listing-list li:last-child {
+      border-bottom: none;
+    }
+
+    .file-listing-list li:hover {
+      background: var(--table-header);
+    }
+
+    .file-listing-list li .file-index {
+      color: var(--text-secondary);
+      font-size: 11px;
+      margin-right: 8px;
+      min-width: 24px;
+      display: inline-block;
+      text-align: right;
+    }
     </style>
 </head>
 
@@ -553,6 +653,8 @@
         <div class="metadata-section">
             <div id="metadata-content"></div>
         </div>
+
+        <div id="file-listing-container"></div>
 
         <div class="images-section">
             <div class="images-title">Screenshots</div>
@@ -1112,6 +1214,63 @@
     }
           }
     
+    function renderFileListing(text) {
+      const files = text.split("\n").filter((f) => f.trim());
+      if (files.length === 0) return;
+
+      const container = document.getElementById("file-listing-container");
+
+      const section = document.createElement("div");
+      section.className = "file-listing-section";
+
+      // Header (clickable to toggle)
+      const header = document.createElement("div");
+      header.className = "file-listing-header";
+      header.onclick = () => section.classList.toggle("open");
+
+      const title = document.createElement("span");
+      title.className = "file-listing-title";
+      title.textContent = "Folder Contents";
+
+      const toggle = document.createElement("div");
+      toggle.className = "file-listing-toggle";
+
+      const count = document.createElement("span");
+      count.className = "file-listing-count";
+      count.textContent = files.length + " file" + (files.length !== 1 ? "s" : "");
+
+      const arrow = document.createElement("span");
+      arrow.className = "file-listing-arrow";
+      arrow.textContent = "▼";
+
+      toggle.appendChild(count);
+      toggle.appendChild(arrow);
+      header.appendChild(title);
+      header.appendChild(toggle);
+
+      // Body (hidden by default)
+      const body = document.createElement("div");
+      body.className = "file-listing-body";
+
+      const list = document.createElement("ul");
+      list.className = "file-listing-list";
+
+      files.forEach((file, idx) => {
+        const li = document.createElement("li");
+        const indexSpan = document.createElement("span");
+        indexSpan.className = "file-index";
+        indexSpan.textContent = (idx + 1) + ".";
+        li.appendChild(indexSpan);
+        li.appendChild(document.createTextNode(file));
+        list.appendChild(li);
+      });
+
+      body.appendChild(list);
+      section.appendChild(header);
+      section.appendChild(body);
+      container.appendChild(section);
+    }
+
     function extractImages(html) {
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = html;
@@ -1165,7 +1324,8 @@
             let arrayChar = b64DecodeUnicode(value).split("#");
             const bbcodeText = arrayChar[0];
             const metadataText = arrayChar[1];
-    
+            const fileListingText = arrayChar[2] || null;
+
             const $$html = document.getElementById("htmlimage");
             const core = BbobCore.default(BbobPresetHTML5.default());
     
@@ -1187,7 +1347,12 @@
             if (metadataText) {
               parseMetadata(metadataText);
             }
-    
+
+            // Display folder file listing if present
+            if (fileListingText) {
+              renderFileListing(fileListingText);
+            }
+
             // Extract and display images
             extractImages(parsed.html);
           } catch (err) {
