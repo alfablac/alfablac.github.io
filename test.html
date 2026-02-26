@@ -8,6 +8,7 @@
     <script src="https://unpkg.com/@bbob/core/dist/index.js"></script>
     <script src="https://unpkg.com/@bbob/html/dist/index.js"></script>
     <script src="https://unpkg.com/@bbob/preset-html5/dist/index.js"></script>
+    <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -807,14 +808,32 @@
           }
     
           function b64DecodeUnicode(str) {
-            return decodeURIComponent(
-              atob(str)
-                .split("")
-                .map(function (c) {
-                  return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-                })
-                .join("")
-            );
+            // Convert base64url to standard base64
+            let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+            // Add padding if needed
+            while (b64.length % 4) b64 += '=';
+            
+            const binaryStr = atob(b64);
+            const bytes = new Uint8Array(binaryStr.length);
+            for (let i = 0; i < binaryStr.length; i++) {
+              bytes[i] = binaryStr.charCodeAt(i);
+            }
+            
+            // Try zlib decompression first (new format)
+            try {
+              const decompressed = pako.inflate(bytes);
+              return new TextDecoder().decode(decompressed);
+            } catch (e) {
+              // Fallback: plain base64 (legacy format)
+              return decodeURIComponent(
+                binaryStr
+                  .split("")
+                  .map(function (c) {
+                    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+                  })
+                  .join("")
+              );
+            }
           }
     
           function downloadNZB(filename) {
