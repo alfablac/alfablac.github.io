@@ -303,6 +303,7 @@
             width: 100%;
             max-width: 260px;
             border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
           }
     
           .image-wrapper:hover {
@@ -314,6 +315,95 @@
             width: 100%;
             height: auto;
             display: block;
+          }
+
+          .image-caption {
+            padding: 10px 12px;
+            border-top: 1px solid var(--border-color);
+            background: var(--table-header);
+          }
+
+          .image-caption-title {
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+          }
+
+          .image-caption-meta {
+            color: var(--text-secondary);
+            font-size: 11px;
+            line-height: 1.35;
+          }
+
+          .audio-analysis-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-top: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: none;
+          }
+
+          .audio-analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+          }
+
+          .audio-analysis-header:hover {
+            background: var(--table-header);
+          }
+
+          .audio-analysis-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .audio-analysis-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+          }
+
+          .audio-analysis-count {
+            background: var(--border-color);
+            color: var(--text-primary);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+          }
+
+          .audio-analysis-arrow {
+            font-size: 14px;
+            transition: transform 0.3s;
+          }
+
+          .audio-analysis-section.open .audio-analysis-arrow {
+            transform: rotate(180deg);
+          }
+
+          .audio-analysis-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 16px;
+          }
+
+          .audio-analysis-section.open .audio-analysis-body {
+            max-height: 2200px;
+            padding: 0 16px 16px;
           }
     
           .modal {
@@ -490,6 +580,18 @@
             .metadata-section,
             .images-section {
               padding: 12px;
+            }
+
+            .audio-analysis-header {
+              padding: 10px 12px;
+            }
+
+            .audio-analysis-body {
+              padding: 0 12px;
+            }
+
+            .audio-analysis-section.open .audio-analysis-body {
+              padding: 0 12px 12px;
             }
             
             .modal-nav.prev {
@@ -674,6 +776,19 @@
         <div class="images-section">
             <div class="images-title">Screenshots</div>
             <div id="image-gallery" class="image-grid"></div>
+        </div>
+
+        <div id="audio-analysis-section" class="audio-analysis-section">
+            <div class="audio-analysis-header" onclick="toggleAudioAnalysis()">
+                <span class="audio-analysis-title">Audio Analysis</span>
+                <div class="audio-analysis-toggle">
+                    <span id="audio-analysis-count" class="audio-analysis-count">0 images</span>
+                    <span class="audio-analysis-arrow">▼</span>
+                </div>
+            </div>
+            <div class="audio-analysis-body">
+                <div id="audio-analysis-gallery" class="image-grid"></div>
+            </div>
         </div>
 
         <div id="htmlimage" style="display: none"></div>
@@ -896,17 +1011,26 @@
             localStorage.setItem("theme", newTheme);
           }
     
-          function openModal(url, index) {
+          function normalizeFullImageUrl(url) {
+            if (!url) return "";
+            if (url.includes("pixhost.to/show/")) {
+              return url.replace("pixhost.to/show/", "img1.pixhost.to/images/");
+            }
+            return url;
+          }
+
+          function openModal(images, index) {
+            carouselImages = Array.isArray(images) ? images.slice() : [];
             currentImageIndex = index;
             updateCarouselImage();
             document.getElementById("modal").classList.add("active");
           }
           
     function updateCarouselImage() {
+      if (!carouselImages.length) return;
+
       const url = carouselImages[currentImageIndex];
-      const fullImageUrl = url
-        .replace("pixhost.to/show/", "img1.pixhost.to/images/")
-        .replace("_tmp", "_tmp");
+      const fullImageUrl = normalizeFullImageUrl(url);
       
       const modalImage = document.getElementById("modal-image");
       const spinner = document.getElementById("modal-spinner");
@@ -1336,36 +1460,112 @@
       container.appendChild(section);
     }
 
-    function extractImages(html) {
+    function collectImages(html) {
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = html;
       const links = tempDiv.querySelectorAll("a");
-      const gallery = document.getElementById("image-gallery");
-      
-      // Reset carousel images
-      carouselImages = [];
-    
+      const items = [];
+
       links.forEach((link) => {
         const img = link.querySelector("img");
         if (img) {
-          // Store the link href for carousel
-          carouselImages.push(link.href);
-          
-          // Capture the current index
-          const imageIndex = carouselImages.length - 1;
-          
-          const wrapper = document.createElement("div");
-          wrapper.className = "image-wrapper";
-          wrapper.onclick = () => openModal(link.href, imageIndex);
-    
-          const newImg = document.createElement("img");
-          newImg.src = img.src;
-          newImg.alt = "Screenshot";
-    
-          wrapper.appendChild(newImg);
-          gallery.appendChild(wrapper);
+          items.push({
+            url_orig: link.href,
+            url_thumb: img.src,
+          });
         }
       });
+
+      return items;
+    }
+
+    function renderImageGallery(items, containerId) {
+      const gallery = document.getElementById(containerId);
+      gallery.innerHTML = "";
+      if (!items || !items.length) return;
+
+      const imageUrls = items.map((item) => item.url_orig);
+
+      items.forEach((item, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "image-wrapper";
+        wrapper.onclick = () => openModal(imageUrls, index);
+
+        const newImg = document.createElement("img");
+        newImg.src = item.url_thumb;
+        newImg.alt = item.title || "Image";
+
+        wrapper.appendChild(newImg);
+
+        if (item.title || item.summary) {
+          const caption = document.createElement("div");
+          caption.className = "image-caption";
+
+          if (item.title) {
+            const title = document.createElement("div");
+            title.className = "image-caption-title";
+            title.textContent = item.title;
+            caption.appendChild(title);
+          }
+
+          if (item.summary) {
+            const meta = document.createElement("div");
+            meta.className = "image-caption-meta";
+            meta.textContent = item.summary;
+            caption.appendChild(meta);
+          }
+
+          wrapper.appendChild(caption);
+        }
+
+        gallery.appendChild(wrapper);
+      });
+    }
+
+    function toggleAudioAnalysis() {
+      const section = document.getElementById("audio-analysis-section");
+      section.classList.toggle("open");
+    }
+
+    function renderAudioAnalysis(items) {
+      const section = document.getElementById("audio-analysis-section");
+      const count = document.getElementById("audio-analysis-count");
+
+      if (!items || !items.length) {
+        section.style.display = "none";
+        section.classList.remove("open");
+        return;
+      }
+
+      count.textContent = items.length + " image" + (items.length !== 1 ? "s" : "");
+      renderImageGallery(items, "audio-analysis-gallery");
+      section.style.display = "block";
+    }
+
+    function parsePayloadSections(decodedPayload) {
+      const sections = decodedPayload.split("#");
+      const bbcodeText = sections.shift() || "";
+      const metadataText = sections.shift() || "";
+
+      let fileListingText = null;
+      let audioAnalysisText = null;
+
+      if (sections.length === 1) {
+        fileListingText = sections[0] || null;
+      } else if (sections.length >= 2) {
+        const trailingSection = sections[sections.length - 1] || "";
+        if (trailingSection.trim().startsWith("[")) {
+          audioAnalysisText = sections.pop() || null;
+        }
+        fileListingText = sections.join("#") || null;
+      }
+
+      return {
+        bbcodeText,
+        metadataText,
+        fileListingText,
+        audioAnalysisText,
+      };
     }
     
           // Initialize theme
@@ -1386,10 +1586,12 @@
               throw new Error("No base64 parameter found in URL");
             }
     
-            let arrayChar = b64DecodeUnicode(value).split("#");
-            const bbcodeText = arrayChar[0];
-            const metadataText = arrayChar[1];
-            const fileListingText = arrayChar[2] || null;
+            const {
+              bbcodeText,
+              metadataText,
+              fileListingText,
+              audioAnalysisText,
+            } = parsePayloadSections(b64DecodeUnicode(value));
 
             const $$html = document.getElementById("htmlimage");
             const core = BbobCore.default(BbobPresetHTML5.default());
@@ -1418,8 +1620,19 @@
               renderFileListing(fileListingText);
             }
 
-            // Extract and display images
-            extractImages(parsed.html);
+            // Extract and display screenshots
+            const screenshotItems = collectImages(parsed.html);
+            renderImageGallery(screenshotItems, "image-gallery");
+
+            // Render optional audio analysis gallery
+            if (audioAnalysisText) {
+              try {
+                const audioItems = JSON.parse(audioAnalysisText);
+                renderAudioAnalysis(audioItems);
+              } catch (audioError) {
+                console.warn("Failed to parse audio analysis payload", audioError);
+              }
+            }
           } catch (err) {
             document.getElementById("error").innerHTML =
               '<div class="error">Error: ' + err.message + "</div>";
