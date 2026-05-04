@@ -405,6 +405,15 @@
             max-height: 2200px;
             padding: 0 16px 16px;
           }
+
+          .audio-analysis-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            align-items: start;
+          }
+
+          .audio-analysis-grid .image-wrapper {
+            max-width: none;
+          }
     
           .modal {
             display: none;
@@ -787,7 +796,7 @@
                 </div>
             </div>
             <div class="audio-analysis-body">
-                <div id="audio-analysis-gallery" class="image-grid"></div>
+                <div id="audio-analysis-gallery" class="image-grid audio-analysis-grid"></div>
             </div>
         </div>
 
@@ -1527,6 +1536,22 @@
       section.classList.toggle("open");
     }
 
+    function orderAudioAnalysisItems(items) {
+      return items.slice().sort((left, right) => {
+        const leftTrack = Number.isFinite(Number(left.track_number)) ? Number(left.track_number) : 9999;
+        const rightTrack = Number.isFinite(Number(right.track_number)) ? Number(right.track_number) : 9999;
+        if (leftTrack !== rightTrack) return leftTrack - rightTrack;
+
+        const leftArtifact = Number.isFinite(Number(left.artifact_order)) ? Number(left.artifact_order) : 9999;
+        const rightArtifact = Number.isFinite(Number(right.artifact_order)) ? Number(right.artifact_order) : 9999;
+        if (leftArtifact !== rightArtifact) return leftArtifact - rightArtifact;
+
+        const leftStream = Number.isFinite(Number(left.stream_index)) ? Number(left.stream_index) : 9999;
+        const rightStream = Number.isFinite(Number(right.stream_index)) ? Number(right.stream_index) : 9999;
+        return leftStream - rightStream;
+      });
+    }
+
     function renderAudioAnalysis(items) {
       const section = document.getElementById("audio-analysis-section");
       const count = document.getElementById("audio-analysis-count");
@@ -1537,8 +1562,17 @@
         return;
       }
 
-      count.textContent = items.length + " image" + (items.length !== 1 ? "s" : "");
-      renderImageGallery(items, "audio-analysis-gallery");
+      const orderedItems = orderAudioAnalysisItems(items);
+      const trackNumbers = new Set(
+        orderedItems
+          .map((item) => Number(item.track_number))
+          .filter((value) => Number.isFinite(value))
+      );
+      const imageCountText = orderedItems.length + " image" + (orderedItems.length !== 1 ? "s" : "");
+      count.textContent = trackNumbers.size
+        ? imageCountText + " / " + trackNumbers.size + " track" + (trackNumbers.size !== 1 ? "s" : "")
+        : imageCountText;
+      renderImageGallery(orderedItems, "audio-analysis-gallery");
       section.style.display = "block";
     }
 
